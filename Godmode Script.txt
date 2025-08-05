@@ -1,3 +1,5 @@
+-- LocalScript (put in StarterPlayerScripts or StarterGui)
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
@@ -32,7 +34,7 @@ button.TextScaled = true
 button.Parent = frame
 Instance.new("UICorner", button)
 
--- Hide button (small X)
+-- Hide button (X)
 local hideButton = Instance.new("TextButton")
 hideButton.Size = UDim2.new(0, 30, 1, 0)
 hideButton.Position = UDim2.new(1, -30, 0, 0)
@@ -44,7 +46,7 @@ hideButton.TextScaled = true
 hideButton.Parent = frame
 Instance.new("UICorner", hideButton)
 
--- Show button (appears when GUI is hidden)
+-- Show button
 local showButton = Instance.new("TextButton")
 showButton.Size = UDim2.new(0, 120, 0, 40)
 showButton.Position = UDim2.new(1, -130, 1, -50)
@@ -58,7 +60,7 @@ showButton.Visible = false
 showButton.Parent = screenGui
 Instance.new("UICorner", showButton)
 
--- Handle visibility toggle
+-- Button toggle visibility
 hideButton.MouseButton1Click:Connect(function()
 	frame.Visible = false
 	showButton.Visible = true
@@ -69,7 +71,7 @@ showButton.MouseButton1Click:Connect(function()
 	showButton.Visible = false
 end)
 
--- God mode state
+-- God mode logic
 local godMode = false
 local humanoid
 local renderConnection
@@ -100,7 +102,6 @@ local function updateGodMode()
 	end
 end
 
--- Setup character
 local function setupCharacter(character)
 	humanoid = character:WaitForChild("Humanoid", 5)
 	if not humanoid then return end
@@ -123,63 +124,13 @@ local function setupCharacter(character)
 	end)
 end
 
+-- Connect character events
 player.CharacterAdded:Connect(setupCharacter)
 if player.Character then
 	setupCharacter(player.Character)
 end
 
--- Toggle God Mode button
-button.MouseButton1Click:Connect(function()
-	godMode = not godMode
-	button.Text = "God Mode: " .. (godMode and "ON" or "OFF")
-	updateGodMode()
-end)
-				if humanoid and humanoid.Parent and humanoid.Health < 100 then
-					humanoid.Health = 100
-				end
-			end)
-		end
-	else
-		humanoid.BreakJointsOnDeath = true
-		humanoid:SetStateEnabled(Enum.HumanoidStateType.Dead, true)
-
-		if renderConnection then
-			renderConnection:Disconnect()
-			renderConnection = nil
-		end
-	end
-end
-
--- Setup character
-local function setupCharacter(character)
-	humanoid = character:WaitForChild("Humanoid", 5)
-	if not humanoid then return end
-
-	-- Reapply settings on character respawn
-	updateGodMode()
-
-	humanoid.Died:Connect(function()
-		if godMode then
-			local hrp = humanoid.Parent:FindFirstChild("HumanoidRootPart")
-			local newHumanoid = Instance.new("Humanoid")
-			newHumanoid.Parent = humanoid.Parent
-			humanoid:Destroy()
-			humanoid = newHumanoid
-			setupCharacter(newHumanoid.Parent)
-
-			if hrp then
-				humanoid.Parent:MoveTo(hrp.Position)
-			end
-		end
-	end)
-end
-
-player.CharacterAdded:Connect(setupCharacter)
-if player.Character then
-	setupCharacter(player.Character)
-end
-
--- Toggle button
+-- Button toggle logic
 button.MouseButton1Click:Connect(function()
 	godMode = not godMode
 	button.Text = "God Mode: " .. (godMode and "ON" or "OFF")
